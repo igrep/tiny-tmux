@@ -20,3 +20,23 @@ function! g:TinyTmuxSendKeysSelectWindow( ... )
   call g:TinyTmuxSelectWindow( a:1 )
 endfunction
 command! -nargs=+ -complete=shellcmd TinyTmuxSendKeysSelectWindow call g:TinyTmuxSendKeysSelectWindow( <f-args> )
+
+"
+" nomenclature: adopt a name diffrent from tmux's commands when the function's behavior somewhat differs from them.
+"
+function! g:TinyTmuxSwitchPane( target )
+  let target_window = substitute(
+        \ a:target,
+        \ '\v\.(([+-]?[0-9]+)|top|bottom|left|right|top-left|top-right|bottom-left|bottom-right)$',
+        \ '', ''
+        \ )
+  call system( "tmux select-pane -t " . a:target )
+  call system( "tmux select-window -t " . target_window )
+endfunction
+command! -nargs=+ -complete=shellcmd TinyTmuxSwitchPane call g:TinyTmuxSwitchPane( <f-args> )
+
+function! g:TinyTmuxSendKeysSwitchPane( ... )
+  call call( function('g:TinyTmuxSendKeys'), a:000 )
+  call g:TinyTmuxSwitchPane( a:1 )
+endfunction
+command! -nargs=+ -complete=shellcmd TinyTmuxSendKeysSwitchPane call g:TinyTmuxSendKeysSwitchPane( <f-args> )
